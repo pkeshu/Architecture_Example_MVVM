@@ -36,13 +36,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getSupportActionBar().setTitle("ViewModelApp");
+        getSupportActionBar().setTitle("Simple Note");
         btnAddNote = findViewById(R.id.btn_add);
         btnAddNote.setOnClickListener(this);
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
-        noteAdapter = new NoteAdapter(this);
+        noteAdapter = new NoteAdapter();
         recyclerView.setAdapter(noteAdapter);
         noteViewModel = ViewModelProviders.of(this).get(NoteViewModel.class);
         noteViewModel.getAllNotes().observe(this, new Observer<List<NoteEntity>>() {
@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onChanged(@Nullable List<NoteEntity> noteEntities) {
                 //update your data
 //                Toast.makeText(MainActivity.this, "onChanged.", Toast.LENGTH_SHORT).show();
-                noteAdapter.setNotes(noteEntities);
+                noteAdapter.submitList(noteEntities);
             }
         });
 
