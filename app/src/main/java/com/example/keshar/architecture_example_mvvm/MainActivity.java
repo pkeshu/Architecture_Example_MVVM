@@ -11,6 +11,9 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -22,7 +25,7 @@ import com.example.keshar.architecture_example_mvvm.ViewModel.NoteViewModel;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    public static final int ADD_NOTE_REQUEST=1;
+    public static final int ADD_NOTE_REQUEST = 1;
 
     private NoteViewModel noteViewModel;
     private RecyclerView recyclerView;
@@ -34,14 +37,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().setTitle("ViewModelApp");
-        btnAddNote=findViewById(R.id.btn_add);
+        btnAddNote = findViewById(R.id.btn_add);
         btnAddNote.setOnClickListener(this);
-        recyclerView=findViewById(R.id.recycler_view);
+        recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
-        noteAdapter=new NoteAdapter(this);
+        noteAdapter = new NoteAdapter(this);
         recyclerView.setAdapter(noteAdapter);
-        noteViewModel=ViewModelProviders.of(this).get(NoteViewModel.class);
+        noteViewModel = ViewModelProviders.of(this).get(NoteViewModel.class);
         noteViewModel.getAllNotes().observe(this, new Observer<List<NoteEntity>>() {
             @Override
             public void onChanged(@Nullable List<NoteEntity> noteEntities) {
@@ -66,29 +69,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }).attachToRecyclerView(recyclerView);
 
     }
-    private void addNote(){
-        Intent intent=new Intent(MainActivity.this,AddNoteActivity.class);
-        startActivityForResult(intent,ADD_NOTE_REQUEST);
+
+    private void addNote() {
+        Intent intent = new Intent(MainActivity.this, AddNoteActivity.class);
+        startActivityForResult(intent, ADD_NOTE_REQUEST);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==ADD_NOTE_REQUEST && resultCode==RESULT_OK){
-            String title=data.getStringExtra(AddNoteActivity.EXTRA_TITLE);
-            String description=data.getStringExtra(AddNoteActivity.EXTRA_DESCRIPTION);
-            int priority=data.getIntExtra(AddNoteActivity.EXTRA_PRIORITY,1);
-            
-            NoteEntity noteEntity=new NoteEntity(title,description,priority);
+        if (requestCode == ADD_NOTE_REQUEST && resultCode == RESULT_OK) {
+            String title = data.getStringExtra(AddNoteActivity.EXTRA_TITLE);
+            String description = data.getStringExtra(AddNoteActivity.EXTRA_DESCRIPTION);
+            int priority = data.getIntExtra(AddNoteActivity.EXTRA_PRIORITY, 1);
+
+            NoteEntity noteEntity = new NoteEntity(title, description, priority);
             noteViewModel.insert(noteEntity);
             Toast.makeText(this, "Note Saved", Toast.LENGTH_SHORT).show();
-        }else
+        } else
             Toast.makeText(this, "Note not Saved", Toast.LENGTH_SHORT).show();
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.delete_all_notes:
+                noteViewModel.deleteAllNotes();
+                Toast.makeText(this, "All Notes are deleted.", Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+    }
+
+    @Override
     public void onClick(View v) {
-        if(v.equals(btnAddNote))
+        if (v.equals(btnAddNote))
             addNote();
 
     }
