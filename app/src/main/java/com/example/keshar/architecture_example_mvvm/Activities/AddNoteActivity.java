@@ -30,7 +30,7 @@ public class AddNoteActivity extends AppCompatActivity {
         edtTextTitle = findViewById(R.id.edt_txt_title);
         edtTexrDescription = findViewById(R.id.edt_txt_description);
         numberPickerPriority = findViewById(R.id.number_picker_priority);
-        numberPickerPriority.setMaxValue(1);
+        numberPickerPriority.setMinValue(1);
         numberPickerPriority.setMaxValue(9);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close);
         setTitle("Add Note");
